@@ -1,53 +1,41 @@
+Visualizing Regions of Interest (ROIs) on a Scalp Map
+================
+Peter Lam
+2025-02-28
 
----
-title: Visualizing Regions of Interest (ROIs) on a Scalp Map
-author: "Peter Lam"
-date: "`r Sys.Date()`"
-output: 
-  github_document
-
----
-
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  fig.path = "README_figs/README-"
-)
-```
-
-```{r library, message=FALSE, warning=FALSE}
+``` r
 library(ggplot2)
 library(tidyverse)
 ```
 
 # Introduction
-This document demonstrates how to visualize Regions of Interest (ROIs) on a scalp map using R. Section 2 shows step by step how we set up the function (from drawing the scalp to knowing which electrode goes where). Section 3 contains the self-contained function that you can copy and paste into your R script or R Markdown document. This is followed by some examples of the function's usage is shown. Finally, Section 4 is a documentation of the function parameters.
 
-It is important to note that some code for creating the head shape and electrode locations is adopted from the `eegUtils` R package created by Matt Craddock, which has important functions to preprocess and present data, such as making topographical maps (https://www.mattcraddock.com/blog/2017/09/05/eegutils-an-r-package-for-eeg/). The current function takes some of the code for building a scalp map and adds the ability to easily highlight and outline ROIs.
+This document demonstrates how to visualize Regions of Interest (ROIs)
+on a scalp map using R. Section 2 shows step by step how we set up the
+function (from drawing the scalp to knowing which electrode goes where).
+Section 3 contains the self-contained function that you can copy and
+paste into your R script or R Markdown document. This is followed by
+some examples of the function’s usage is shown. Finally, Section 4 is a
+documentation of the function parameters.
+
+It is important to note that some code for creating the head shape and
+electrode locations is adopted from the `eegUtils` R package created by
+Matt Craddock, which has important functions to preprocess and present
+data, such as making topographical maps
+(<https://www.mattcraddock.com/blog/2017/09/05/eegutils-an-r-package-for-eeg/>).
+The current function takes some of the code for building a scalp map and
+adds the ability to easily highlight and outline ROIs.
 
 # Setup
 
 ## Loading and Preparing Electrode Location Data
 
-First, we load the electrode location data from a CSV file and convert the polar coordinates to Cartesian coordinates.
+First, we load the electrode location data from a CSV file and convert
+the polar coordinates to Cartesian coordinates.
 
-```{r, message=FALSE, warning=FALSE, echo = F}
-# Read channel locations
-chanLocs <- read_csv('chanLocs.csv') %>%
-  rename(electrode = labels)
+Let’s visualize the electrode locations in Cartesian coordinates.
 
-# Convert theta values (polar format) to radians (Cartesian coordinates)
-chanLocs$radianTheta <- pi / 180 * chanLocs$theta
-
-chanLocs <- chanLocs %>%
-  mutate(x = .$radius * sin(.$radianTheta),
-         y = .$radius * cos(.$radianTheta)) %>%
-  select(electrode, x, y)
-
-```
-
-Let's visualize the electrode locations in Cartesian coordinates.
-
-```{r}
+``` r
 # See how it's like
 cartesian <- ggplot(chanLocs,
                     aes(x, y, label = electrode)) +
@@ -57,11 +45,14 @@ cartesian <- ggplot(chanLocs,
 cartesian
 ```
 
+![](README_figs/README-unnamed-chunk-3-1.png)<!-- -->
+
 ## Defining the Scalp Map Theme and Head Shape
 
-We define a custom theme (theme_topo) for the scalp map and create the head shape using a circle function.
+We define a custom theme (theme_topo) for the scalp map and create the
+head shape using a circle function.
 
-```{r}
+``` r
 # Define theme for topo maps
 theme_topo <- function(base_size = 12) {
   theme_bw(base_size = base_size) %+replace%
@@ -86,8 +77,9 @@ headShape <- circleFun(c(0, 0), round(max(chanLocs$x)), npoints = 100) # 0
 nose <- data.frame(x = c(-0.075, 0, .075), y = c(.495, .575, .495))
 ```
 
-Now, let's see the electrode locations on the head shape.
-```{r}
+Now, let’s see the electrode locations on the head shape.
+
+``` r
 # See final product of channel locations on a head
 ggplot(headShape, aes(x, y)) +
   geom_path() +
@@ -99,9 +91,14 @@ ggplot(headShape, aes(x, y)) +
   coord_equal()
 ```
 
+![](README_figs/README-unnamed-chunk-5-1.png)<!-- -->
+
 ## Defining Regions of Interest (ROIs)
-We define the ROIs by mapping electrode labels to ROI names. You can (and should) change this to your own assignment.
-```{r}
+
+We define the ROIs by mapping electrode labels to ROI names. You can
+(and should) change this to your own assignment.
+
+``` r
 # Define roi mapping
 roi_mapping <- list(
   "Left anterior" = c("AF3", "Fp1", "F7", "F5", "F3", "FT7", "FC5", "FC3"),
@@ -120,12 +117,16 @@ electrode_to_roi <- unlist(lapply(names(roi_mapping),
                                   function(x) setNames(rep(x, length(roi_mapping[[x]])),
                                                        roi_mapping[[x]])))
 ```
+
 # The `draw_roi_highlights` Function (self contained section)
 
-Copy the two code chunks below (Function set-up and Function Definition) into your R script or R Markdown document to use the `draw_roi_highlights` function.
+Copy the two code chunks below (Function set-up and Function Definition)
+into your R script or R Markdown document to use the
+`draw_roi_highlights` function.
 
 ## Function set-up (reusing some code above)
-```{r, class.source = 'fold-hide', message = F}
+
+``` r
 # Read channel locations
 chanLocs <- read_csv('chanLocs.csv') %>%
   rename(electrode = labels)
@@ -180,10 +181,9 @@ electrode_to_roi <- unlist(lapply(names(roi_mapping),
                                                        roi_mapping[[x]])))
 ```
 
-
 ## Function Definition
 
-```{r draw_roi_function, id="self-contained-function"}
+``` r
 # Function to draw ROI outlines and highlights
 draw_roi_highlights <- function(selected_rois, headShape = NULL, chanLocs = NULL, nose = NULL,
                                 roi_fill_color = "blue", roi_fill_alpha = 0.3,
@@ -252,94 +252,113 @@ draw_roi_highlights <- function(selected_rois, headShape = NULL, chanLocs = NULL
 }
 ```
 
-## Example Usage 
+## Example Usage
 
-Let's use the `draw_roi_highlights` function to visualize different ROI combinations.
+Let’s use the `draw_roi_highlights` function to visualize different ROI
+combinations.
 
 Example 1: All ROIs
-```{r}
+
+``` r
 selected_rois <- c("Medial anterior", "Left anterior", "Right anterior", "Left central", "Medial central", "Right central", "Left posterior", "Medial posterior", "Right posterior")
 roi_plot <- draw_roi_highlights(selected_rois)
 roi_plot
 ```
 
+![](README_figs/README-unnamed-chunk-8-1.png)<!-- -->
+
 Example 2: Selected ROIs
 
-```{r}
+``` r
 selected_rois <- c("Left anterior", "Medial central", "Right posterior")
 roi_plot <- draw_roi_highlights(selected_rois, roi_fill_color = "green", roi_outline_color = "darkgreen", electrode_circle_color = "purple")
 roi_plot
 ```
 
+![](README_figs/README-unnamed-chunk-9-1.png)<!-- -->
+
 Example 3: Changing Parameters
-```{r}
+
+``` r
 selected_rois <- c("Left anterior", "Right anterior")
 roi_plot <- draw_roi_highlights(selected_rois, roi_fill_color = "orange", roi_fill_alpha = 0.5, roi_outline_linewidth = 2, electrode_circle_size = 4, roi_expansion_x = 1.2, roi_expansion_y = 1.3)
 roi_plot
 ```
 
+![](README_figs/README-unnamed-chunk-10-1.png)<!-- -->
+
 # Function Parameters Documentation
 
-The `draw_roi_highlights` function provides several parameters to customize the appearance of the scalp map. Below is a detailed description of each parameter:
+The `draw_roi_highlights` function provides several parameters to
+customize the appearance of the scalp map. Below is a detailed
+description of each parameter:
 
 ## Key Parameters
 
-* **`selected_rois`**:
-    * A character vector specifying the ROIs to be highlighted.
-    * **Required**.
-    * Options: Any combination of ROI names defined in the `roi_mapping` list (e.g., `c("Left anterior", "Medial central")`).
+- **`selected_rois`**:
+  - A character vector specifying the ROIs to be highlighted.
+  - **Required**.
+  - Options: Any combination of ROI names defined in the `roi_mapping`
+    list (e.g., `c("Left anterior", "Medial central")`).
 
 ## Optional Parameters
 
-* **`headShape`**:
-    * A data frame defining the shape of the head.
-    * Default: `NULL` (uses the `headShape` object from the calling environment).
-    * Options: A data frame with `x` and `y` columns.
-* **`chanLocs`**:
-    * A data frame containing the electrode locations.
-    * Default: `NULL` (uses the `chanLocs` object from the calling environment).
-    * Options: A data frame with `electrode`, `x`, and `y` columns.
-* **`nose`**:
-    * A data frame defining the shape of the nose.
-    * Default: `NULL` (uses the `nose` object from the calling environment).
-    * Options: A data frame with `x` and `y` columns.
-* **`roi_fill_color`**:
-    * The fill color for the highlighted ROI areas.
-    * Default: `"blue"`.
-    * Options: Any valid R color (e.g., `"red"`, `"green"`, `"#FF0000"`).
-* **`roi_fill_alpha`**:
-    * The transparency (alpha) value for the ROI fill.
-    * Default: `0.3`.
-    * Options: A numeric value between 0 (fully transparent) and 1 (fully opaque).
-* **`roi_outline_color`**:
-    * The outline color for the highlighted ROI areas.
-    * Default: `"blue"`.
-    * Options: Any valid R color.
-* **`roi_outline_linewidth`**:
-    * The line width of the ROI outlines.
-    * Default: `1.25`.
-    * Options: A numeric value.
-* **`electrode_circle_color`**:
-    * The fill color for the electrode circles when they belong to a selected ROI.
-    * Default: `"red"`.
-    * Options: Any valid R color.
-* **`electrode_circle_size`**:
-    * The size of the electrode circles.
-    * Default: `3`.
-    * Options: A numeric value.
-* **`scalp_linewidth`**:
-    * The line width of the scalp outline.
-    * Default: 1.5
-    * Options: A numeric value.
-* **`nose_linewidth`**:
-    * The line width of the nose line.
-    * Default: 1.25
-    * Options: A numeric value.
-* **`roi_expansion_x`**:
-    * The expansion factor on the x axis for the ROI outlines.
-    * Default: 1.3
-    * Options: a numeric value. larger values push the outlines further from the center of the ROI.
-* **`roi_expansion_y`**:
-    * The expansion factor on the y axis for the ROI outlines.
-    * Default: 1.4
-    * Options: a numeric value. larger values push the outlines further from the center of the ROI.
+- **`headShape`**:
+  - A data frame defining the shape of the head.
+  - Default: `NULL` (uses the `headShape` object from the calling
+    environment).
+  - Options: A data frame with `x` and `y` columns.
+- **`chanLocs`**:
+  - A data frame containing the electrode locations.
+  - Default: `NULL` (uses the `chanLocs` object from the calling
+    environment).
+  - Options: A data frame with `electrode`, `x`, and `y` columns.
+- **`nose`**:
+  - A data frame defining the shape of the nose.
+  - Default: `NULL` (uses the `nose` object from the calling
+    environment).
+  - Options: A data frame with `x` and `y` columns.
+- **`roi_fill_color`**:
+  - The fill color for the highlighted ROI areas.
+  - Default: `"blue"`.
+  - Options: Any valid R color (e.g., `"red"`, `"green"`, `"#FF0000"`).
+- **`roi_fill_alpha`**:
+  - The transparency (alpha) value for the ROI fill.
+  - Default: `0.3`.
+  - Options: A numeric value between 0 (fully transparent) and 1 (fully
+    opaque).
+- **`roi_outline_color`**:
+  - The outline color for the highlighted ROI areas.
+  - Default: `"blue"`.
+  - Options: Any valid R color.
+- **`roi_outline_linewidth`**:
+  - The line width of the ROI outlines.
+  - Default: `1.25`.
+  - Options: A numeric value.
+- **`electrode_circle_color`**:
+  - The fill color for the electrode circles when they belong to a
+    selected ROI.
+  - Default: `"red"`.
+  - Options: Any valid R color.
+- **`electrode_circle_size`**:
+  - The size of the electrode circles.
+  - Default: `3`.
+  - Options: A numeric value.
+- **`scalp_linewidth`**:
+  - The line width of the scalp outline.
+  - Default: 1.5
+  - Options: A numeric value.
+- **`nose_linewidth`**:
+  - The line width of the nose line.
+  - Default: 1.25
+  - Options: A numeric value.
+- **`roi_expansion_x`**:
+  - The expansion factor on the x axis for the ROI outlines.
+  - Default: 1.3
+  - Options: a numeric value. larger values push the outlines further
+    from the center of the ROI.
+- **`roi_expansion_y`**:
+  - The expansion factor on the y axis for the ROI outlines.
+  - Default: 1.4
+  - Options: a numeric value. larger values push the outlines further
+    from the center of the ROI.
