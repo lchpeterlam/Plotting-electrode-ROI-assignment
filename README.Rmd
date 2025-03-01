@@ -30,7 +30,7 @@ It is important to note that some code for creating the head shape and electrode
 
 First, we load the electrode location data from a CSV file and convert the polar coordinates to Cartesian coordinates.
 
-```{r, message=FALSE, warning=FALSE, echo = F}
+```{r, message=FALSE, warning=FALSE}
 # Read channel locations
 chanLocs <- read_csv('chanLocs.csv') %>%
   rename(electrode = labels)

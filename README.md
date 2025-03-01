@@ -1,7 +1,7 @@
 Visualizing Regions of Interest (ROIs) on a Scalp Map
 ================
 Peter Lam
-2025-02-28
+2025-03-01
 
 ``` r
 library(ggplot2)
@@ -33,6 +33,20 @@ adds the ability to easily highlight and outline ROIs.
 
 First, we load the electrode location data from a CSV file and convert
 the polar coordinates to Cartesian coordinates.
+
+``` r
+# Read channel locations
+chanLocs <- read_csv('chanLocs.csv') %>%
+  rename(electrode = labels)
+
+# Convert theta values (polar format) to radians (Cartesian coordinates)
+chanLocs$radianTheta <- pi / 180 * chanLocs$theta
+
+chanLocs <- chanLocs %>%
+  mutate(x = .$radius * sin(.$radianTheta),
+         y = .$radius * cos(.$radianTheta)) %>%
+  select(electrode, x, y)
+```
 
 Let’s visualize the electrode locations in Cartesian coordinates.
 
