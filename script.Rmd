@@ -348,7 +348,3 @@ The `draw_roi_highlights` function provides several parameters to customize the 
     * The expansion factor on the y axis for the ROI outlines.
     * Default: 1.4
     * Options: a numeric value. larger values push the outlines further from the center of the ROI.
-    
-```{r}
-draw_roi_highlights(c("Medial anterior", "Left anterior", "Medial posterior"))   
-```
