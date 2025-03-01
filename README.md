@@ -3,17 +3,29 @@ Visualizing Regions of Interest (ROIs) on a Scalp Map
 Peter Lam
 2025-02-28
 
+``` r
+library(ggplot2)
+library(tidyverse)
+```
+
 # Introduction
 
 This document demonstrates how to visualize Regions of Interest (ROIs)
 on a scalp map using R. Section 2 shows step by step how we set up the
 function (from drawing the scalp to knowing which electrode goes where).
-Section 3 contains the self-contained function that you can copy and
-paste into your R script or R Markdown document. This is followed by
-some examples of the function’s usage is shown. Finally, Section 4 is a
-documentation of the function parameters.
+[Section 3 contains the self-contained
+function](https://github.com/lchpeterlam/Plotting-electrode-ROI-assignment?tab=readme-ov-file#the-draw_roi_highlights-function-self-contained-section)
+that you can copy and paste into your R script or R Markdown document.
+This is followed by some examples of the function’s usage is shown.
+Finally, Section 4 is a documentation of the function parameters.
 
-[Jump to the self-contained function](#self-contained-function)
+It is important to note that some code for creating the head shape and
+electrode locations is adopted from the `eegUtils` R package created by
+Matt Craddock, which has important functions to preprocess and present
+data, such as making topographical maps
+(<https://www.mattcraddock.com/blog/2017/09/05/eegutils-an-r-package-for-eeg/>).
+The current function takes some of the code for building a scalp map and
+adds the ability to easily highlight and outline ROIs.
 
 # Setup
 
@@ -34,7 +46,7 @@ cartesian <- ggplot(chanLocs,
 cartesian
 ```
 
-![](script_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-3-1.png)<!-- -->
 
 ## Defining the Scalp Map Theme and Head Shape
 
@@ -80,7 +92,7 @@ ggplot(headShape, aes(x, y)) +
   coord_equal()
 ```
 
-![](script_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-5-1.png)<!-- -->
 
 ## Defining Regions of Interest (ROIs)
 
@@ -254,7 +266,7 @@ roi_plot <- draw_roi_highlights(selected_rois)
 roi_plot
 ```
 
-![](script_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-8-1.png)<!-- -->
 
 Example 2: Selected ROIs
 
@@ -264,7 +276,7 @@ roi_plot <- draw_roi_highlights(selected_rois, roi_fill_color = "green", roi_out
 roi_plot
 ```
 
-![](script_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-9-1.png)<!-- -->
 
 Example 3: Changing Parameters
 
@@ -274,7 +286,7 @@ roi_plot <- draw_roi_highlights(selected_rois, roi_fill_color = "orange", roi_fi
 roi_plot
 ```
 
-![](script_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-10-1.png)<!-- -->
 
 # Function Parameters Documentation
 
