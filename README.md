@@ -33,8 +33,8 @@ To quickly visualize ROIs on a scalp map, you can use the
 `draw_roi_highlights` function provided in this document. First, ensure
 you have the necessary electrode location data in a CSV file named
 `chanLocs.csv`, obtained from the EEGLAB standard 10-20 system. Then,
-copy the function definition from the [The `draw_roi_highlights`
-Function (self contained
+copy the function definition from the `draw_roi_highlights` [function
+(self contained
 section)](https://github.com/lchpeterlam/Plotting-electrode-ROI-assignment?tab=readme-ov-file#the-draw_roi_highlights-function-self-contained-section)
 into your R script or R Markdown document. Finally, call the function
 with your desired ROIs to generate the scalp map visualization.
