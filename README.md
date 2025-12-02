@@ -1,7 +1,7 @@
 Visualizing Regions of Interest (ROIs) on a Scalp Map
 ================
 Peter Lam
-2025-03-01
+2025-12-02
 
 ``` r
 library(ggplot2)
@@ -9,6 +9,35 @@ library(tidyverse)
 ```
 
 # Introduction
+
+## Who is this for?
+
+This document is intended for researchers and data analysts working with
+EEG data who wish to visualize Regions of Interest (ROIs) on a scalp
+map. The provided R function allows users to highlight specific ROIs by
+outlining them and marking the associated electrodes, facilitating
+better interpretation of EEG data in relation to anatomical regions.
+
+## Why use this?
+
+Visualizing ROIs on a scalp map is crucial for understanding the spatial
+distribution of EEG signals and their relation to brain activity.
+Highlighting specific ROIs can help in identifying patterns, comparing
+conditions, and communicating findings effectively. This function
+simplifies the process of creating such visualizations, making it
+accessible even for those with limited experience in R programming.
+
+## Quick start
+
+To quickly visualize ROIs on a scalp map, you can use the
+`draw_roi_highlights` function provided in this document. First, ensure
+you have the necessary electrode location data in a CSV file named
+`chanLocs.csv`. Then, copy the function definition from the “The
+`draw_roi_highlights` Function” section into your R script or R Markdown
+document. Finally, call the function with your desired ROIs to generate
+the scalp map visualization.
+
+## Overview of this document
 
 This document demonstrates how to visualize Regions of Interest (ROIs)
 on a scalp map using R. Section 2 shows step by step how we set up the
